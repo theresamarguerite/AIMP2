@@ -83,8 +83,35 @@ clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 
 map.addSource("posterCity", {
 type: "geojson",
 // Point to GeoJSON data.
-data: "APC_city.geojson",
+data: "posters.geojson",
 cluster:false,
+});
+// add polygon layers
+map.addLayer({
+  id: "posters",
+  source: "posterCity",
+  type: "fill",
+  paint: {
+    "fill-opacity": 0.5,
+    "fill-color": "#006298",
+  }
+});
+//add topo layer
+map.addSource("topos", {
+type: "geojson",
+// Point to GeoJSON data.
+data: "topos.geojson",
+cluster:false,
+});
+// add polygon layers
+map.addLayer({
+  id: "maps",
+  source: "topos",
+  type: "fill",
+  paint: {
+    "fill-opacity": 0.5,
+    "fill-color": "#66435A",
+  }
 });
 map.addLayer({
 id: "clusters",
@@ -140,15 +167,7 @@ paint: {
 "circle-stroke-color": "#EDEBEB",
 }
 });
-map.addLayer({
-  id: "posters",
-  source: "posterCity",
-  type: "fill",
-  paint: {
-    "fill-opacity": 0.5,
-    "fill-color": "#006298",
-  }
-});
+
 
 // inspect a cluster on click
 map.on('click', 'clusters', function (e) {
@@ -200,7 +219,7 @@ var layers = document.getElementById('menu');
 layers.appendChild(link);
 
 //this is the orig menu that works. Use this for non-cluster layers
-var toggleableLayerIds = [ 'posters', ];
+var toggleableLayerIds = [ 'posters', 'maps'];
 
 for (var i = 0; i < toggleableLayerIds.length; i++) {
 var id = toggleableLayerIds[i];
@@ -234,3 +253,4 @@ layers.appendChild(link);
 
 </body>
 </html>
+
