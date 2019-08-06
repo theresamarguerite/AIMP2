@@ -12,6 +12,13 @@ body { margin:0; padding:0; }
 </style>
 </head>
 <body>
+//add style for Popup
+<style>
+.mapboxgl-popup {
+max-width: 800px;
+font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+</style>
 //add style for layer selection
   <style>
 #menu {
@@ -92,7 +99,7 @@ map.addLayer({
   source: "posterCity",
   type: "fill",
   paint: {
-    "fill-opacity": 0.5,
+    "fill-opacity": 0.3,
     "fill-color": "#006298",
   }
 });
@@ -189,6 +196,47 @@ map.on('mouseleave', 'clusters', function () {
 map.getCanvas().style.cursor = '';
 });
 });
+
+// Create a popup, but don't add it to the map yet.
+var popup = new mapboxgl.Popup({
+closeButton: true,
+closeOnClick: true
+});
+
+map.on('click', 'unclustered-point', function(e) {
+// Change the cursor style as a UI indicator.
+map.getCanvas().style.cursor = 'pointer';
+
+var coordinates = e.features[0].geometry.coordinates.slice();
+//var description = [e.features[0].properties.title + "<br>" + "<a href=e.features[0].properties.id>View Image</a>"];
+
+// Ensure that if the map is zoomed out such that multiple
+// copies of the feature are visible, the popup appears
+// over the copy being pointed to.
+while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+}
+
+// Populate the popup and set its coordinates
+// based on the feature found.
+popup.setLngLat(coordinates)
+.setHTML(e.features[0].properties.title + '<h3> <br><a href="' + e.features[0].properties.id + '">View Image</a></h3>')
+
+.addTo(map);
+});
+
+// Change the cursor to a pointer when the mouse is over the places layer.
+map.on('mouseenter', 'unclustered-point', function () {
+map.getCanvas().style.cursor = 'pointer';
+});
+
+// Change it back to a pointer when it leaves.
+map.on('mouseleave', 'unclustered-point', function () {
+map.getCanvas().style.cursor = '';
+});
+
+
+
 //layer selection tool for group of clusters, points, and labels
 var clusterLayers = [ 'clusters', 'unclustered-point', 'cluster-count' ];
 
@@ -253,4 +301,3 @@ layers.appendChild(link);
 
 </body>
 </html>
-
