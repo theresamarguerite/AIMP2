@@ -100,11 +100,11 @@ paint: {
 "circle-color": [
 "step",
 ["get", "point_count"],
-"#51bbd6",
+"#01426A",
 100,
-"#f1f075",
+"#512A44",
 750,
-"#f28cb1"
+"#990000"
 ],
 "circle-radius": [
 "step",
@@ -134,17 +134,21 @@ type: "circle",
 source: "images",
 filter: ["!", ["has", "point_count"]],
 paint: {
-"circle-color": "#11b4da",
+"circle-color": "#990000",
 "circle-radius": 4,
 "circle-stroke-width": 1,
-"circle-stroke-color": "#fff"
+"circle-stroke-color": "#EDEBEB",
 }
 });
 map.addLayer({
   id: "posters",
   source: "posterCity",
   type: "fill",
-})
+  paint: {
+    "fill-opacity": 0.5,
+    "fill-color": "#006298",
+  }
+});
 
 // inspect a cluster on click
 map.on('click', 'clusters', function (e) {
@@ -166,8 +170,37 @@ map.on('mouseleave', 'clusters', function () {
 map.getCanvas().style.cursor = '';
 });
 });
-//add layer selection
-var toggleableLayerIds = [ 'posters', 'clusters' ];
+//layer selection tool for group of clusters, points, and labels
+var clusterLayers = [ 'clusters', 'unclustered-point', 'cluster-count' ];
+
+
+var link = document.createElement('a');
+link.href = '#';
+link.className = 'active';
+link.textContent = "Photographs";
+link.onclick = function (e) {
+    for(var index in clusterLayers) {
+      var clickedLayer = clusterLayers[index];
+      e.preventDefault();
+      e.stopPropagation();
+
+      var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+
+      if (visibility === 'visible') {
+          map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+          this.className = '';
+      } else {
+          this.className = 'active';
+          map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+      }
+    }
+
+};
+var layers = document.getElementById('menu');
+layers.appendChild(link);
+
+//this is the orig menu that works. Use this for non-cluster layers
+var toggleableLayerIds = [ 'posters', ];
 
 for (var i = 0; i < toggleableLayerIds.length; i++) {
 var id = toggleableLayerIds[i];
@@ -196,6 +229,7 @@ map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
 var layers = document.getElementById('menu');
 layers.appendChild(link);
 }
+
 </script>
 
 </body>
