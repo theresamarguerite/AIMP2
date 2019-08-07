@@ -262,8 +262,8 @@ map.getCanvas().style.cursor = '';
 map.on('click', 'posters', function (e) {
 new mapboxgl.Popup()
 .setLngLat(e.lngLat)
-.setHTML("<h3>Poster Title:</h3>" + e.features[0].properties.TITLE + '<h3> <br><a href="' + e.features[0].properties.LINK + '">More Info</a></h3>' )
-.addTo(map);
+//.setHTML("<h3>Poster Title:</h3>" + e.features[0].properties.TITLE + '<h3> <br><a href="' + e.features[0].properties.LINK + '">More Info</a></h3>' )
+.setHTML(e.features.map(function(feature) { return "<h3>Poster Title:</h3>" + feature.properties.TITLE + '<h3> <br><a href="' + feature.properties.LINK + '">More Info</a></h3>'; }).join('<i>overlapping posters</i>')).addTo(map);
 });
 
 // Change the cursor to a pointer when the mouse is over the maps layer.
