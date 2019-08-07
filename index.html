@@ -86,7 +86,7 @@ cluster: true,
 clusterMaxZoom: 14, // Max zoom to cluster points on
 clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
 });
-//add poster layer
+//add poster layer source
 map.addSource("posterCity", {
 type: "geojson",
 // Point to GeoJSON data.
@@ -116,10 +116,15 @@ map.addLayer({
   source: "topos",
   type: "fill",
   paint: {
+
     "fill-opacity": 0.5,
-    "fill-color": "#66435A",
+    "fill-color": '#66435A',
   }
 });
+// filter to only show maps that IU owns
+map.setFilter('maps', ['==', 'IU_Owns', 1]);
+
+//add clusters for image layer
 map.addLayer({
 id: "clusters",
 type: "circle",
@@ -197,7 +202,7 @@ map.getCanvas().style.cursor = '';
 });
 });
 
-// Create a popup, but don't add it to the map yet.
+// Create a popup for image layer, but don't add it to the map yet.
 var popup = new mapboxgl.Popup({
 closeButton: true,
 closeOnClick: true
@@ -235,7 +240,41 @@ map.on('mouseleave', 'unclustered-point', function () {
 map.getCanvas().style.cursor = '';
 });
 
+// Create a popup for map layer
+map.on('click', 'maps', function (e) {
+new mapboxgl.Popup()
+.setLngLat(e.lngLat)
+.setHTML("<h3>Sheet Name:</h3>" + e.features[0].properties.Sheet_name + "<br>" + "<h3>Sheet Title:</h3>" + e.features[0].properties.Sheet_Titles + "<h3>Year:</h3>" + e.features[0].properties.Sheet_Year )
+.addTo(map);
+});
 
+// Change the cursor to a pointer when the mouse is over the maps layer.
+map.on('mouseenter', 'maps', function () {
+map.getCanvas().style.cursor = 'pointer';
+});
+
+// Change it back to a pointer when it leaves.
+map.on('mouseleave', 'maps', function () {
+map.getCanvas().style.cursor = '';
+});
+
+// Create a popup for poster layer
+map.on('click', 'posters', function (e) {
+new mapboxgl.Popup()
+.setLngLat(e.lngLat)
+.setHTML("<h3>Poster Title:</h3>" + e.features[0].properties.TITLE + '<h3> <br><a href="' + e.features[0].properties.LINK + '">More Info</a></h3>' )
+.addTo(map);
+});
+
+// Change the cursor to a pointer when the mouse is over the maps layer.
+map.on('mouseenter', 'posters', function () {
+map.getCanvas().style.cursor = 'pointer';
+});
+
+// Change it back to a pointer when it leaves.
+map.on('mouseleave', 'posters', function () {
+map.getCanvas().style.cursor = '';
+});
 
 //layer selection tool for group of clusters, points, and labels
 var clusterLayers = [ 'clusters', 'unclustered-point', 'cluster-count' ];
