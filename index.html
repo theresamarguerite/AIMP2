@@ -97,6 +97,9 @@ cluster:false,
 map.addLayer({
   id: "posters",
   source: "posterCity",
+  'layout': {
+            'visibility': 'none'
+        },
   type: "fill",
   paint: {
     "fill-opacity": 0.3,
@@ -276,7 +279,57 @@ map.on('mouseleave', 'posters', function () {
 map.getCanvas().style.cursor = '';
 });
 
-//layer selection tool for group of clusters, points, and labels
+
+//testing
+map.on('load', function() {
+  toggleLayer(['clusters', 'unclustered-point', 'cluster-count'], 'Photographs');
+  toggleLayer(['posters'], 'Posters');
+  toggleLayer(['maps'], 'Topographic Maps');
+
+  function toggleLayer(ids, name) {
+      var link = document.createElement('a');
+      link.href = '#';
+      // Get the visibility for all layers in the ids argument.
+      var visibility = ids.map(function(id) {
+        return map.getLayoutProperty(id, 'visibility');
+      });
+      // Get the unique values.
+      var visUnique = visibility.filter(uniques);
+      // Default to not visible.
+      var visCssClass = 'active';
+      // If all layers are visible, use the 'active' class so the toggle is "on".
+      if ( visUnique.length === 1 && visUnique[0] === 'visible' ) {
+        visCssClass = 'active';
+      }
+      link.className = visCssClass;
+      link.textContent = name;
+
+      link.onclick = function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          for (layers in ids){
+          var visibility = map.getLayoutProperty(ids[layers], 'visibility');
+
+          if (visibility === 'visible') {
+              map.setLayoutProperty(ids[layers], 'visibility', 'none');
+              this.className = '';
+          } else {
+              this.className = 'active';
+              map.setLayoutProperty(ids[layers], 'visibility', 'visible');
+          }
+          }
+
+      };
+
+      var layers = document.getElementById('menu');
+      layers.appendChild(link);
+          }
+      function uniques(value, index, self) {
+          return self.indexOf(value) === index;
+            }
+});
+
+/*layer selection tool for group of clusters, points, and labels
 var clusterLayers = [ 'clusters', 'unclustered-point', 'cluster-count' ];
 
 
@@ -304,8 +357,8 @@ link.onclick = function (e) {
 };
 var layers = document.getElementById('menu');
 layers.appendChild(link);
-
-//this is the orig menu that works. Use this for non-cluster layers
+*/
+/*this is the orig menu that works. Use this for non-cluster layers
 var toggleableLayerIds = [ 'posters', 'maps'];
 
 for (var i = 0; i < toggleableLayerIds.length; i++) {
@@ -313,7 +366,7 @@ var id = toggleableLayerIds[i];
 
 var link = document.createElement('a');
 link.href = '#';
-link.className = 'active';
+link.className = '';
 link.textContent = id;
 
 link.onclick = function (e) {
@@ -335,7 +388,7 @@ map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
 var layers = document.getElementById('menu');
 layers.appendChild(link);
 }
-
+*/
 </script>
 
 </body>
